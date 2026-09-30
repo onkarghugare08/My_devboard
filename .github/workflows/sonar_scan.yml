@@ -13,7 +13,15 @@ jobs:
               uses: actions/checkout@v4
               with:
                 fetch-depth: 0
-
+             
+            -  name: Verify Secret Presence
+               run: |
+                if [ -z "${{ secrets.SONAR_TOKEN }}" ]; then
+                  echo "❌ ERROR: SONAR_TOKEN is completely empty inside this workflow!"
+                  exit 1
+                else
+                  echo "✅ SONAR_TOKEN is present."
+                fi
             - name: SonarQube Scan
               uses: SonarSource/sonarqube-scan-action@v7
               with:
