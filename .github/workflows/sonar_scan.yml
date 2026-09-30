@@ -18,7 +18,7 @@ jobs:
               uses: SonarSource/sonarqube-scan-action@v7
               with:
                 args: >
-                  -Dsonar.organization=onkar-1817
+                  -Dsonar.organization=onkarghugare08
                   -Dsonar.projectKey=devboard
               env:
                 SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
