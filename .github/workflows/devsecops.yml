@@ -1,62 +1,40 @@
-# Goal - To Run End to End DevSecOps CI Pipeline
-
-name: DevSecOps
+name: DEVSECOPS
 
 on:
-    push:
-        branches: [main]
+  workflow_dispatch:
 
 jobs:
+  code_quality:
+    uses: ./.github/workflows/code-quality.yml
 
-    ## ---- CI ----
-    # Code Stage 
-    code-quality:
-        uses: ./.github/workflows/code-quality.yml
+  secrets_scanning:
+    uses:  ./.github/workflows/secret-scanning.yml
 
-    # Secret Scanning
-    secret-scanning:
-        needs: [code-quality]
-        uses: ./.github/workflows/secret-scanning.yml
+  dependency_check:
+    uses:  ./.github/workflows/dependency-scan.yml 
 
-    # Dependency Checks
-    dependency-checks:
-        needs: [secret-scanning]
-        uses: ./.github/workflows/dependency-scan.yml
+  docker_scan:
+    uses:  ./.github/workflows/docker-scans.yml   
+    secrets: inherit
 
-    # Docker Checks
-    docker-checks:
-        needs: [dependency-checks]
-        uses: ./.github/workflows/docker-scans.yml
-        secrets: inherit 
+  sonar_scan:
+    uses:  ./.github/workflows/sonar_scan.yml   
+    secrets: inherit  
 
-    # CodeQL Analysis
-    codeql-analysis:
-        needs: [docker-checks]
-        uses: ./.github/workflows/codeql.yml
-        permissions:
-         actions: read
-         contents: read
-         security-events: write
-         packages: read
+  code_test:
+    uses:  ./.github/workflows/code-tests.yml    
 
-    # Code Tests
-    code-tests:
-        needs: [codeql-analysis]
-        uses: ./.github/workflows/code-tests.yml
+  docker_push:
+    needs: [code_quality,secrets_scanning,dependency_check,docker_scan,sonar_scan,code_test]
+    uses:  ./.github/workflows/docker-push.yml   
+    secrets: inherit   
 
-    # push-to-docker-hub:
-    docker-push:
-        uses: ./.github/workflows/docker-push.yml
-        needs: [code-tests]
-        secrets: inherit
+  deploy: 
+    needs: [ docker_push]  
+    uses:  ./.github/workflows/deploy.yml   
+    secrets: inherit   
 
-    ## ---- CD -----
-    deploy:
-        needs: [docker-push]
-        uses: ./.github/workflows/deploy.yml
-        secrets: inherit
-
-    dast-scan:
-        needs: [deploy]
-        uses: ./.github/workflows/dast.yml
-        secrets: inherit
+  dast:
+    needs: [ deploy]  
+    uses:  ./.github/workflows/dast.yml   
+    secrets: inherit     
