@@ -17,9 +17,9 @@ jobs:
             - name: SonarQube Scan
               uses: SonarSource/sonarqube-scan-action@v8.2.0
               with:
-                  args: >
-                      -Dsonar.organization=onkar1817
-                      -Dsonar.projectKey=devboard
+                args: >
+                    -Dsonar.organization=onkar1817
+                    -Dsonar.projectKey=devboard
               env:
                 SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
                 SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
