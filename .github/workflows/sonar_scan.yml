@@ -1,33 +1,40 @@
-# Goal - to check whether the application code coverage doesn't have security threats/issues
+# Goal - to check whether the application code has security threats/issues using GitHub CodeQL
 
-name: Sonar Qube Scan
+name: Security Scan (CodeQL)
 
 on:
     workflow_call:
 
 jobs:
-    sonar-scanner:
+    analyze:
+        name: CodeQL Analyze
         runs-on: ubuntu-latest
+        permissions:
+          # Required to write security alerts back to the repository's Security tab
+          security-events: write
+          actions: read
+          contents: read
+
         steps:
             - name: Code Checkout
               uses: actions/checkout@v4
               with:
                 fetch-depth: 0
-             
-            -  name: Verify Secret Presence
-               run: |
-                if [ -z "${{ secrets.SONAR_TOKEN }}" ]; then
-                  echo "❌ ERROR: SONAR_TOKEN is completely empty inside this workflow!"
-                  exit 1
-                else
-                  echo "✅ SONAR_TOKEN is present."
-                fi
-            - name: SonarQube Scan
-              uses: SonarSource/sonarqube-scan-action@v7
+
+            # Step 1: Initialize the CodeQL tools and define target languages
+            - name: Initialize CodeQL
+              uses: github/codeql-action/init@v3
               with:
-                args: >
-                  -Dsonar.organization=onkarghuare08
-                  -Dsonar.projectKey=devboard
-              env:
-                SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-                SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+                # Options include: javascript-typescript, python, go, java-kotlin, csharp, cpp, ruby
+                languages: javascript-typescript 
+
+            # Step 2: Automatically attempt to build compiled languages (if applicable)
+            # For JavaScript/Python/Ruby, this step can safely remain but does nothing.
+            - name: Autobuild
+              uses: github/codeql-action/autobuild@v3
+
+            # Step 3: Run the deep security analysis
+            - name: Perform CodeQL Analysis
+              uses: github/codeql-action/analyze@v3
+              with:
+                category: "/language:javascript-typescript"
