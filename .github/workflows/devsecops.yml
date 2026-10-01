@@ -20,12 +20,7 @@ jobs:
 
   sonar_scan:
     uses:  ./.github/workflows/sonar_scan.yml   
-    with:
-      # Pass the host URL as a standard configuration string
-      SONAR_HOST_URL: https://sonarcloud.io   
-    secrets:
-      # Explicitly forward the token down to the child workflow
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    secrets: inherit
 
  # code_test:
    # uses:  ./.github/workflows/code-tests.yml    
