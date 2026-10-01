@@ -35,7 +35,7 @@ jobs:
               with:
                 args: >
                   -Dsonar.organization=onkarghuare08
-                  -Dsonar.projectKey=devboard
+                  -Dsonar.projectKey=My_devboard
               env:
                 SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
                 SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
