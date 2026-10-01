@@ -4,7 +4,6 @@ name: Sonar Qube Scan
 
 on:
     workflow_call:
-      # This allows the calling workflow to pass secrets down to this reusable workflow
       secrets:
         SONAR_TOKEN:
           required: true
@@ -16,25 +15,29 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Code Checkout
-              uses: actions/checkout@v7
+              uses: actions/checkout@v4
               with:
                 fetch-depth: 0
              
             - name: Verify Secret Presence
               run: |
                 if [ -z "${{ secrets.SONAR_TOKEN }}" ]; then
-                  echo "❌ ERROR: SONAR_TOKEN is completely empty inside this workflow!"
+                  echo "❌ ERROR: SONAR_TOKEN is empty!"
                   exit 1
-                else
-                  echo "✅ SONAR_TOKEN is present."
+                fi
+                if [ -z "${{ secrets.SONAR_HOST_URL }}" ]; then
+                  echo "❌ ERROR: SONAR_HOST_URL is empty!"
+                  exit 1
                 fi
                 
             - name: SonarQube Scan
-              uses: SonarSource/sonarqube-scan-action@v5  # Standard stable version for standard self-hosted scan
+              uses: SonarSource/sonarqube-scan-action@v5
               with:
+                # pass custom project settings here
                 args: >
                   -Dsonar.projectKey=devboard
-                  -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}
               env:
-                SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+                # 1. This environment variable tells SonarScanner exactly where your server lives
                 SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+                # 2. This authenticates the connection
+                SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
