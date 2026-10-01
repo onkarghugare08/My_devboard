@@ -1,25 +1,27 @@
-name: dast
+# Goal: to scan the dynamic running application 
 
-on:
-  workflow_call:
+name: DAST
+
+on: 
+    workflow_call
 
 jobs:
-  OWASP_ZAP_DAST_Scan:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Code Checkout
-        uses: actions/checkout@v4
+    dast:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Code Checkout
+              uses: actions/checkout@v7
 
-      # 1. Added http:// to the health check loop
-      - name: Wait for services to be healthy
-        run: |
-          timeout 60s sh -c 'until curl -s http://${{ secrets.EC2_HOST }}:8080 > /dev/null; do sleep 2; done'
+            - name: Wait for services to be healthy
+              run: |
+                timeout 60s sh -c 'until curl -s http://${{ secrets.EC2_HOST }} > /dev/null; do sleep 2; done'
 
-      # 2. Added http:// inside the target string parameter
-      - name: OWASP ZAP Baseline Scan
-        uses: zaproxy/action-baseline@v0.14.0
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          target: 'http://${{ secrets.EC2_HOST }}:8080'
-          fail_action: false
-          allow_issue_writing: false
+            # Scan the running application 
+            - name: OWASP ZAP Baseline Scan
+              uses: zaproxy/action-baseline@v0.14.0
+              with:
+                token: ${{ secrets.GITHUB_TOKEN }}
+                target: 'http://${{ secrets.EC2_HOST }}'
+                fail_action: false
+                allow_issue_writing: false
+        
