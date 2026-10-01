@@ -22,6 +22,14 @@ jobs:
                 else
                   echo "✅ SONAR_TOKEN is present."
                 fi
+            -  name: Verify Secret Presence
+               run: |
+                if [ -z "${{ secrets.SONAR_HOST_URL}}" ]; then
+                  echo "❌ ERROR: SONAR_HOST_URL is completely empty inside this workflow!"
+                  exit 1
+                else
+                  echo "✅ SONAR_HOST_URL is present."
+                fi
             - name: SonarQube Scan
               uses: SonarSource/sonarqube-scan-action@v8
               with:
