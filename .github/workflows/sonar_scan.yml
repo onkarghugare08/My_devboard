@@ -22,7 +22,7 @@ jobs:
                 else
                   echo "✅ SONAR_TOKEN is present."
                 fi
-            -  name: Verify Secret Presence
+            -  name: Verify Secret Host URL Presence
                run: |
                 if [ -z "${{ secrets.SONAR_HOST_URL}}" ]; then
                   echo "❌ ERROR: SONAR_HOST_URL is completely empty inside this workflow!"
