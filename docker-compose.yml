@@ -33,7 +33,7 @@ services:
 
   backend:
     build: ./backend
-    image: onkar1817/devboard-master-backend  
+    image: onkar1817/devboard-backend  
     container_name: devboard-backend
     environment:
       PORT: "${BACKEND_PORT}"
@@ -48,7 +48,7 @@ services:
     
   frontend:
     build: ./frontend
-    image: onkar1817/devboard-master-frontend
+    image: onkar1817/devboard-frontend
     container_name: devboard-frontend
     depends_on:
       - backend
