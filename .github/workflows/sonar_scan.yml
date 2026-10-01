@@ -4,10 +4,14 @@ name: Sonar Qube Scan
 
 on:
     workflow_call:
-      secrets:
-        SONAR_TOKEN:
-          required: true
+      inputs:
+        # 1. Accepting the URL as an input prevents GitHub from stripping it due to scope rules
         SONAR_HOST_URL:
+          required: true
+          type: string
+      secrets:
+        # Keep the token as a secret for security
+        SONAR_TOKEN:
           required: true
 
 jobs:
@@ -25,19 +29,18 @@ jobs:
                   echo "❌ ERROR: SONAR_TOKEN is empty!"
                   exit 1
                 fi
-                if [ -z "${{ secrets.SONAR_HOST_URL }}" ]; then
+                if [ -z "${{ inputs.SONAR_HOST_URL }}" ]; then
                   echo "❌ ERROR: SONAR_HOST_URL is empty!"
                   exit 1
                 fi
+                echo "✅ Required configuration properties found."
                 
             - name: SonarQube Scan
               uses: SonarSource/sonarqube-scan-action@v5
               with:
-                # pass custom project settings here
                 args: >
                   -Dsonar.projectKey=devboard
               env:
-                # 1. This environment variable tells SonarScanner exactly where your server lives
-                SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-                # 2. This authenticates the connection
                 SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+                # 2. Feed the input URL directly into the scanner environment
+                SONAR_HOST_URL: ${{ inputs.SONAR_HOST_URL }}
