@@ -4,38 +4,38 @@ on:
   push:
 
 jobs:
-  #code_quality:
-   # uses: ./.github/workflows/code-quality.yml
+  code_quality:
+    uses: ./.github/workflows/code-quality.yml
 
   secrets_scanning:
    uses:  ./.github/workflows/secret-scanning.yml
    
 
-  #dependency_check:
-   # uses:  ./.github/workflows/dependency-scan.yml 
+  dependency_check:
+    uses:  ./.github/workflows/dependency-scan.yml 
 
-  #docker_scan:
-   # uses:  ./.github/workflows/docker-scans.yml   
-    #secrets: inherit
+  docker_scan:
+    uses:  ./.github/workflows/docker-scans.yml   
+    secrets: inherit
 
   sonar_scan:
     uses:  ./.github/workflows/sonar_scan.yml   
     secrets: inherit
 
- # code_test:
-   # uses:  ./.github/workflows/code-tests.yml    
+  code_test:
+    uses:  ./.github/workflows/code-tests.yml    
 
- # docker_push:
-   # needs: [code_quality,secrets_scanning,dependency_check,docker_scan,sonar_scan,code_test]
-   # uses:  ./.github/workflows/docker-push.yml   
-    #secrets: inherit   
+  docker_push:
+    needs: [code_quality,secrets_scanning,dependency_check,docker_scan,sonar_scan,code_test]
+    uses:  ./.github/workflows/docker-push.yml   
+    secrets: inherit   
 
- # deploy: 
-    #needs: [ docker_push]  
-   # uses:  ./.github/workflows/deploy.yml   
-    #secrets: inherit   
+  deploy: 
+    needs: [ docker_push]  
+    uses:  ./.github/workflows/deploy.yml   
+    secrets: inherit   
 
-  #dast:
-  #  needs: [ deploy]  
-    #uses:  ./.github/workflows/dast.yml   
-   # secrets: inherit     
+  dast:
+    needs: [ deploy]  
+    uses:  ./.github/workflows/dast.yml   
+    secrets: inherit     
